@@ -5,6 +5,8 @@ and it is consume them by self with login proxy.
 
 The server only works to API Rest, the web routes will be disabled
 
+![alt text](https://docs.axway.com/bundle/APIGateway_753_OAuthUserGuide_allOS_en_HTML5/page/Content/Resources/Images/docbook/images/oauth/APIgw_Oauth_ex_client_workfl.png "Oauth Server")
+
 ### Install
 
 1. Go to project root folder and run
