@@ -4,10 +4,12 @@ namespace Oauth\Services;
 
 use App\User;
 use GuzzleHttp\Client;
-use Illuminate\Cookie\CookieJar;
-use Illuminate\Support\Facades\App;
-use Oauth\Exceptions\InvalidCredentialsException;
+use Illuminate\Http\Request;
+use Illuminate\Auth\AuthManager;
 use Oauth\Formatter\JsonFormatter;
+use Illuminate\Foundation\Application;
+use Illuminate\Database\DatabaseManager;
+use Oauth\Exceptions\InvalidCredentialsException;
 
 /**
  * Class LoginProxyService
@@ -16,19 +18,14 @@ use Oauth\Formatter\JsonFormatter;
 class LoginProxyService
 {
     /**
-     * Refresh Token's cookie name
-     */
-    const REFRESH_TOKEN = 'refresh_token';
-
-    /**
-     * One day to seconds
-     */
-    const DAY_TO_SECONDS = 86400;
-
-    /**
-     * @var Auth
+     * @var AuthManager
      */
     private $auth;
+
+    /**
+     * @var DatabaseManager
+     */
+    private $database;
 
     /**
      * @var Client
@@ -36,20 +33,23 @@ class LoginProxyService
     private $client;
 
     /**
-     * @var CookieJar
+     * @var Request
      */
-    private $cookie;
+    private $request;
+
 
     /**
-     * LoginProxy constructor.
+     * LoginProxyService constructor.
+     * @param Application $app
      */
-    public function __construct()
+    public function __construct(Application $app)
     {
-        $this->auth = App::make('auth');
+        $this->auth = $app->make('auth');
         $this->client = new Client([
             'base_uri' => env('APP_URL')
         ]);
-        $this->cookie = App::make('cookie');
+        $this->request = $app->make('request');
+        $this->database = $app->make('db');
     }
 
     /**
@@ -71,6 +71,50 @@ class LoginProxyService
         ]);
     }
 
+    /**
+     * @param string $refreshToken
+     * @return array
+     */
+    public function refresh(string $refreshToken): array
+    {
+        return $this->requestToken('refresh_token', [
+            'refresh_token' => $refreshToken
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function logout(): array
+    {
+        $token = $this->auth->user()->token();
+        $accessToken = str_replace(
+            'Bearer ',
+            '',
+            $this->request->header('Authorization')
+        );
+
+        $this->database
+            ->table('oauth_refresh_tokens')
+            ->where('access_token_id', $token->id)
+            ->update([
+                'revoked' => true
+            ]);
+
+        $token->revoke();
+
+        return [
+            'token' => $accessToken,
+            'revoked' => true
+        ];
+    }
+
+    /**
+     * @param string $grantType
+     * @param array $data
+     * @return array
+     * @throws \Exception
+     */
     public function requestToken(string $grantType, array $data = []): array
     {
         $data = array_merge($data, [
@@ -94,16 +138,6 @@ class LoginProxyService
 
         $formatter = new JsonFormatter();
         $data = $formatter->decode($response->getBody());
-
-        $this->cookie->queue(
-            self::REFRESH_TOKEN,
-            $data->refresh_token,
-            self::DAY_TO_SECONDS,
-            null,
-            null,
-            false,
-            false
-        );
 
         return [
             'access_token' => $data->access_token,

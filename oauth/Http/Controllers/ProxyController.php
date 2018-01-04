@@ -2,11 +2,12 @@
 
 namespace Oauth\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Oauth\Http\Requests\RefreshRequest;
 use Oauth\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use Oauth\Http\Requests\LoginRequest;
 use Oauth\Services\LoginProxyService;
-
 
 /**
  * Class ProxyController
@@ -42,5 +43,19 @@ class ProxyController extends Controller
         return $this->response(
             $this->proxy->login($email, $password)
         );
+    }
+
+    public function refresh(RefreshRequest $request)
+    {
+        return $this->response(
+            $this->proxy->refresh(
+                $request->get('refresh_token')
+            )
+        );
+    }
+
+    public function logout()
+    {
+        return $this->response($this->proxy->logout());
     }
 }

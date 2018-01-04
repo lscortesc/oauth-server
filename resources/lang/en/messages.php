@@ -9,7 +9,7 @@ return [
     	'401' => 'Unauthenticated',
     	'403' => 'Forbidden',
     	'404' => 'Not Found',
-		'422' => 'Data not valid'
+		'422' => 'Data is not valid'
     ],
 	'resource' => 'Error at request'
 ];
