@@ -2,26 +2,61 @@
 
 namespace App\Services\Proxies;
 
-use App\Exceptions\InvalidCredentialsException;
 use App\User;
 use GuzzleHttp\Client;
+use Illuminate\Cookie\CookieJar;
 use Illuminate\Support\Facades\App;
+use App\Exceptions\InvalidCredentialsException;
+use App\Http\Responses\Formatters\JsonFormatter;
 
+/**
+ * Class LoginProxy
+ * @package App\Services\Proxies
+ */
 class LoginProxy
 {
+    /**
+     * Refresh Token's cookie name
+     */
+    const REFRESH_TOKEN = 'refresh_token';
+
+    /**
+     * One day to seconds
+     */
+    const DAY_TO_SECONDS = 86400;
+
+    /**
+     * @var Auth
+     */
     private $auth;
 
+    /**
+     * @var Client
+     */
     private $client;
 
+    /**
+     * @var CookieJar
+     */
+    private $cookie;
+
+    /**
+     * LoginProxy constructor.
+     */
     public function __construct()
     {
         $this->auth = App::make('auth');
-
         $this->client = new Client([
             'base_uri' => env('APP_URL')
         ]);
+        $this->cookie = App::make('cookie');
     }
 
+    /**
+     * @param string $email
+     * @param string $password
+     * @return array
+     */
     public function login(string $email, string $password)
     {
         $user = User::where('email', $email)->first();
@@ -31,11 +66,17 @@ class LoginProxy
         }
 
         return $this->requestToken('password', [
-            'username' => $user->email,
+            'username' => $email,
             'password' => $password
         ]);
     }
 
+    /**
+     * @param string $grantType
+     * @param array $data
+     * @return array
+     * @throws \App\Http\Responses\Formatters\Exception
+     */
     public function requestToken(string $grantType, array $data = []): array
     {
         $data = array_merge($data, [
@@ -44,8 +85,36 @@ class LoginProxy
             'grant_type' => $grantType
         ]);
 
-        $response = $this->client->post('oauth/token', $data);
+        $response = $this->client->request('POST', 'oauth/token', [
+            'json' => $data,
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'X-Format' => 'json'
+            ]
+        ]);
 
-        dd($response);
+        if ($response->getStatusCode() !== 200) {
+            throw new InvalidCredentialsException();
+        }
+
+        $formatter = new JsonFormatter();
+        $data = $formatter->decode($response->getBody());
+
+        $this->cookie->queue(
+            self::REFRESH_TOKEN,
+            $data->refresh_token,
+            self::DAY_TO_SECONDS,
+            null,
+            null,
+            false,
+            false
+        );
+
+        return [
+            'access_token' => $data->access_token,
+            'expires_in' => $data->expires_in,
+            'refresh_token' => $data->refresh_token
+        ];
     }
 }
