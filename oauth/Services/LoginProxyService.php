@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Services\Proxies;
+namespace Oauth\Services;
 
 use App\User;
 use GuzzleHttp\Client;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Support\Facades\App;
-use App\Exceptions\InvalidCredentialsException;
-use App\Http\Responses\Formatters\JsonFormatter;
+use Oauth\Exceptions\InvalidCredentialsException;
+use Oauth\Formatter\JsonFormatter;
 
 /**
- * Class LoginProxy
- * @package App\Services\Proxies
+ * Class LoginProxyService
+ * @package Oauth\Services
  */
-class LoginProxy
+class LoginProxyService
 {
     /**
      * Refresh Token's cookie name
@@ -71,12 +71,6 @@ class LoginProxy
         ]);
     }
 
-    /**
-     * @param string $grantType
-     * @param array $data
-     * @return array
-     * @throws \App\Http\Responses\Formatters\Exception
-     */
     public function requestToken(string $grantType, array $data = []): array
     {
         $data = array_merge($data, [

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Responses\Contracts;
+namespace Oauth\Contracts;
 
 /**
- * Interface ResponseFormat
- * @package App\Http\Responses\Contracts
+ * Interface FormatterInterface
+ * @package Oauth\Contracts
  */
-interface ResponseFormat
+interface FormatterInterface
 {
     /**
      * @param $data

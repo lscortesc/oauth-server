@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Oauth\Http\Middleware;
 
 use Closure;
-use App\Http\Responses\Factory\ResponseFormatFactory;
+use Oauth\Factory\FormatterFactory;
 
+/**
+ * Class ResponseFormat
+ * @package App\Http\Middleware
+ */
 class ResponseFormat
 {
     /**
@@ -16,7 +20,9 @@ class ResponseFormat
      */
     public function handle($request, Closure $next)
     {
-        $request->formatter = ResponseFormatFactory::build($request);
+        $request->merge([
+            'formatter' => FormatterFactory::build($request)
+        ]);
 
         return $next($request);
     }

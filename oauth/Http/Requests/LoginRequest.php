@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
-
-use App\Http\Requests\BaseRequest;
+namespace Oauth\Http\Requests;
 
 /**
  * Class LoginRequest
- * @package App\Http\Requests\Auth
+ * @package Oauth\Http\Requests
  */
 class LoginRequest extends BaseRequest
 {

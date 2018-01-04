@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Responses\Formatters;
+namespace Oauth\Formatter;
 
 use Exception;
-use App\Http\Responses\Contracts\ResponseFormat;
+use Oauth\Contracts\FormatterInterface;
 
 /**
  * Class JsonFormatter
- * @package App\Http\Responses\Formatters
+ * @package Oauth\Formatter
  */
-class JsonFormatter implements ResponseFormat
+class JsonFormatter implements FormatterInterface
 {
     /**
      * @var array
@@ -79,9 +79,9 @@ class JsonFormatter implements ResponseFormat
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    private function getErrorMessage()
+    private function getErrorMessage(): string
     {
         return static::$messages[json_last_error()];
     }

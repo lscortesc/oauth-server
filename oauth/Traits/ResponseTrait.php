@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Responses\Traits;
+namespace Oauth\Traits;
 
 /**
  * Class ResponseTrait
- * @package App\Http\Responses\Traits
+ * @package Oauth\Traits
  */
 trait ResponseTrait
 {

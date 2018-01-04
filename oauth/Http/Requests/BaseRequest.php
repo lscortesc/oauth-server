@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Oauth\Http\Requests;
 
+use Oauth\Traits\ResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Http\Responses\Traits\ResponseTrait;
 use Illuminate\Contracts\Validation\Validator;
-use App\Http\Responses\Formatters\JsonFormatter;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
 
 /**
  * Class BaseRequest
- * @package App\Http\Requests
+ * @package Oauth\Http\Requests
  */
 class BaseRequest extends FormRequest
 {
@@ -21,7 +19,8 @@ class BaseRequest extends FormRequest
      * @param Validator $validator
      * @throws HttpResponseException
      */
-    protected function failedValidation(Validator $validator) {
+    protected function failedValidation(Validator $validator)
+    {
         throw new HttpResponseException(
             $this->response([], $validator->errors()->getMessages(), 422)
         );

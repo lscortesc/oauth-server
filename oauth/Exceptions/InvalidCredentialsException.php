@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Exceptions;
+namespace Oauth\Exceptions;
 
 use Exception;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Class InvalidCredentialsException
- * @package App\Exceptions
+ * @package Oauth\Exceptions
  */
 class InvalidCredentialsException extends UnauthorizedHttpException
 {
