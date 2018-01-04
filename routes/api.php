@@ -13,15 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-/*
 Route::namespace('Auth')->group(function ($router) {
     $router->post('/login', 'ProxyController@login');
     $router->post('/logout', 'ProxyController@logout');
     $router->post('/login/refresh', 'ProxyController@refresh');
 });
-*/
-
-Route::post('/login', 'Auth\ProxyController@login');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
