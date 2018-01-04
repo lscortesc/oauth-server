@@ -31,12 +31,11 @@ class JsonFormatter implements FormatterInterface
      * @param int $status
      * @return \Illuminate\Http\JsonResponse
      */
-    public function response(array $data = [], array $errors = [], int $status = 200)
+    public function response(array $data = [], int $status = 200)
     {
         return response()->json(
             [
                 'data' => $data,
-                'errors' => $errors,
                 'code' => $status,
                 'message' => trans("messages.response.$status")
             ],

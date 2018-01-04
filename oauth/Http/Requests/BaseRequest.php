@@ -22,7 +22,9 @@ class BaseRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
-            $this->response([], $validator->errors()->getMessages(), 422)
+            $this->response([
+                'errors' => $validator->errors()->getMessages()
+            ], 422)
         );
     }
 }

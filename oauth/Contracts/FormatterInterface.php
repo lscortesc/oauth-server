@@ -10,11 +10,10 @@ interface FormatterInterface
 {
     /**
      * @param $data
-     * @param $errors
      * @param int $status
      * @return \HttpResponse Response
      */
-    public function response(array $data = [], array $errors = [], int $status = 200);
+    public function response(array $data = [], int $status = 200);
 
     /**
      * @param string $data
