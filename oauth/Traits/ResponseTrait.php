@@ -10,11 +10,10 @@ trait ResponseTrait
 {
     /**
      * @param $data
-     * @param $errors
      * @param $status
      * @return mixed
      */
-    public function response($data = [], $status = 200)
+    public function response($data, $status = 200)
     {
         return request()->formatter->response($data, $status);
     }
